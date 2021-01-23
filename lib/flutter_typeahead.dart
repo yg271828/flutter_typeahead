@@ -227,6 +227,7 @@
 library flutter_typeahead;
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -726,7 +727,7 @@ class _TypeAheadFieldState<T> extends State<TypeAheadField<T>>
   ScrollPosition _scrollPosition;
 
   // Keyboard detection
-  final Stream<bool> _keyboardVisibility = KeyboardVisibility.onChange;
+  final Stream<bool> _keyboardVisibility = (Platform.isLinux || Platform.isMacOS) ? StreamController<bool>().stream : KeyboardVisibility.onChange;
   StreamSubscription<bool> _keyboardVisibilitySubscription;
 
   @override
@@ -777,7 +778,7 @@ class _TypeAheadFieldState<T> extends State<TypeAheadField<T>>
     this._effectiveFocusNode.addListener(_focusNodeListener);
 
     // hide suggestions box on keyboard closed
-    this._keyboardVisibilitySubscription = _keyboardVisibility.listen((bool isVisible) {
+    this._keyboardVisibilitySubscription = _keyboardVisibility?.listen((bool isVisible) {
       if (widget.hideSuggestionsOnKeyboardHide && !isVisible) {
         _effectiveFocusNode.unfocus();
       }
